@@ -24,23 +24,17 @@
 
 ***************************************************************************************************/
 
-#include <wiringPi.h>
-#include <RaspiAPA102/RaspiAPA102.h>
-#include <RaspiFanshim/RaspiFanshim.h>
+/**
+ * @file
+ * @brief   Provides functions to control the pimoroni `Fan SHIM` device on a Raspberry Pi.
+ */
 
-/* ============================================================================================== */
-/* Statics                                                                                        */
-/* ============================================================================================== */
+#ifndef FANSHIM_H
+#define FANSHIM_H
 
-static RaspiAPA102Device G_FANSHIM_LED;
-
-/* ============================================================================================== */
-/* Constants                                                                                      */
-/* ============================================================================================== */
-
-#define RASPI_FANSHIM_PIN_FAN       18
-#define RASPI_FANSHIM_PIN_SPI_SCLK  14
-#define RASPI_FANSHIM_PIN_SPI_MOSI  15
+#include <stdbool.h>
+#include <stdint.h>
+#include <RaspiFanshimExportConfig.h>
 
 /* ============================================================================================== */
 /* Exported functions                                                                             */
@@ -50,47 +44,53 @@ static RaspiAPA102Device G_FANSHIM_LED;
 /* Initialization                                                                                 */
 /* ---------------------------------------------------------------------------------------------- */
 
-void RaspiFanshimInit(void)
-{
-    wiringPiSetupGpio();
-    pinMode(RASPI_FANSHIM_PIN_FAN, OUTPUT);
-
-    RaspiAPA102DeviceInitSoftware(&G_FANSHIM_LED, RASPI_FANSHIM_PIN_SPI_SCLK, 
-        RASPI_FANSHIM_PIN_SPI_MOSI, -1);
-}
+/**
+ *  @brief  Initializes the `Fan SHIM` device.
+ * 
+ *  This function sets the GPIO pins `14`, `15`, and `18` to `OUTPUT` mode.
+ */
+RASPI_FANSHIM_EXPORT void RaspiFanshimInit(void);
 
 /* ---------------------------------------------------------------------------------------------- */
 /* FAN control                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
 
-bool RaspiFanshimIsFanEnabled(void)
-{
-    const int value = digitalRead(RASPI_FANSHIM_PIN_FAN);
+/**
+ * @brief   Queries the current status of the fan.
+ * 
+ * @return  `True`, if the fan is currently running or `false`, if not.
+ */
+RASPI_FANSHIM_EXPORT bool RaspiFanshimIsFanEnabled(void);
 
-    return (value == LOW) ? false : true;
-}
+/**
+ * @brief   Enables or disables the fan.
+ * 
+ * @param   enabled Pass `true` to enable the fan, `false` to disable it.
+ */
+RASPI_FANSHIM_EXPORT void RaspiFanshimEnableFan(bool enabled);
 
-void RaspiFanshimEnableFan(bool enabled)
-{
-    digitalWrite(RASPI_FANSHIM_PIN_FAN, enabled ? HIGH : LOW);
-}
-
-void RaspiFanshimToggleFan(void)
-{
-    RaspiFanshimEnableFan(!RaspiFanshimIsFanEnabled());
-}
+/**
+ * @brief   Toggles the fan.
+ */
+RASPI_FANSHIM_EXPORT void RaspiFanshimToggleFan(void);
 
 /* ---------------------------------------------------------------------------------------------- */
 /* LED control                                                                                    */
 /* ---------------------------------------------------------------------------------------------- */
 
-void RaspiFanshimUpdateLED(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness)
-{
-    const RaspiAPA102ColorQuad color = RASPI_APA102_COLOR_QUAD_INITIALIZER(r, g, b, brightness);
-
-    RaspiAPA102DeviceUpdate(&G_FANSHIM_LED, &color, 1);
-}
+/**
+ * @brief   Updates the color of the `Fan SHIM`s integrated `APA102` LED.
+ * 
+ * @param   r           The red color component.
+ * @param   g           The green color component.
+ * @param   b           The blue color component.
+ * @param   brightness  The LED brightness (0..31).
+ */
+RASPI_FANSHIM_EXPORT void RaspiFanshimUpdateLED(uint8_t r, uint8_t g, uint8_t b, 
+    uint8_t brightness);
 
 /* ---------------------------------------------------------------------------------------------- */
 
-/***************************************************************************************************/
+/* ============================================================================================== */
+
+#endif /* FANSHIM_H */

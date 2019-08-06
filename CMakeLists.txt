@@ -53,8 +53,8 @@ generate_export_header("RaspiFanshim" BASE_NAME "RASPI_FANSHIM" EXPORT_FILE_NAME
 
 target_sources("RaspiFanshim"
     PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/include/RaspiFanshim/RaspiFanshim.h"
-        "src/RaspiFanshim.c")
+        "${CMAKE_CURRENT_LIST_DIR}/include/RaspiFanshim/Fanshim.h"
+        "src/Fanshim.c")
 
 target_compile_definitions("RaspiFanshim" PRIVATE "_GNU_SOURCE")
 find_library(wiringPi_LIB wiringPi REQUIRED)
@@ -76,6 +76,7 @@ install(DIRECTORY "include/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if (RASPI_FANSHIM_BUILD_EXAMPLES)
     add_executable("FanshimService" "examples/FanshimService.c")
+    target_link_libraries("FanshimService" "m")
     target_link_libraries("FanshimService" "RaspiFanshim")
 endif ()
 
